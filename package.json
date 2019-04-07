@@ -1837,6 +1837,15 @@
                 }
             },
             {
+                "command": "gitlens.showTimelinePage",
+                "title": "Open Timeline",
+                "category": "GitLens",
+                "icon": {
+                    "dark": "images/dark/icon-history.svg",
+                    "light": "images/light/icon-history.svg"
+                }
+            },
+            {
                 "command": "gitlens.showSettingsPage",
                 "title": "Open Settings",
                 "category": "GitLens",
@@ -2999,6 +3008,10 @@
         ],
         "menus": {
             "commandPalette": [
+                {
+                    "command": "gitlens.showTimelinePage",
+                    "when": "gitlens:enabled"
+                },
                 {
                     "command": "gitlens.showSettingsPage#repositories-view",
                     "when": "false"
@@ -5195,6 +5208,7 @@
         "vscode:prepublish": "npm run reset && npm run bundle"
     },
     "dependencies": {
+        "billboard.js": "1.9.0",
         "dayjs": "1.8.14",
         "iconv-lite": "0.4.24",
         "lodash-es": "4.17.11",
