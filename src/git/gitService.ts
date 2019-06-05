@@ -595,6 +595,19 @@ export class GitService implements Disposable {
                 editor !== undefined ? `TextEditor(${Logger.toLoggable(editor.document.uri)})` : 'undefined'
         }
     })
+    async getActiveRepository(editor?: TextEditor): Promise<Repository | undefined> {
+        const repoPath = await this.getActiveRepoPath(editor);
+        if (repoPath === undefined) return undefined;
+
+        return this.getRepository(repoPath);
+    }
+
+    @log({
+        args: {
+            0: (editor: TextEditor) =>
+                editor !== undefined ? `TextEditor(${Logger.toLoggable(editor.document.uri)})` : 'undefined'
+        }
+    })
     async getActiveRepoPath(editor?: TextEditor): Promise<string | undefined> {
         editor = editor || window.activeTextEditor;
 
@@ -1010,12 +1023,7 @@ export class GitService implements Disposable {
             }
 
             if (options.sort) {
-                branches!.sort(
-                    (a, b) =>
-                        (a.starred ? -1 : 1) - (b.starred ? -1 : 1) ||
-                        (b.remote ? -1 : 1) - (a.remote ? -1 : 1) ||
-                        a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' })
-                );
+                GitBranch.sort(branches!);
             }
 
             if (options.filter !== undefined) {
@@ -1346,7 +1354,10 @@ export class GitService implements Disposable {
     @log()
     async getLog(
         repoPath: string,
-        { ref, ...options }: { authors?: string[]; maxCount?: number; ref?: string; reverse?: boolean } = {}
+        {
+            ref,
+            ...options
+        }: { authors?: string[]; maxCount?: number; merges?: boolean; ref?: string; reverse?: boolean } = {}
     ): Promise<GitLog | undefined> {
         const maxCount = options.maxCount == null ? Container.config.advanced.maxListItems || 0 : options.maxCount;
 
@@ -1354,6 +1365,7 @@ export class GitService implements Disposable {
             const data = await Git.log(repoPath, ref, {
                 authors: options.authors,
                 maxCount: maxCount,
+                merges: options.merges === undefined ? true : options.merges,
                 reverse: options.reverse,
                 similarityThreshold: Container.config.advanced.similarityThreshold
             });
@@ -2102,11 +2114,7 @@ export class GitService implements Disposable {
             if (remotes === undefined) return [];
 
             if (options.sort) {
-                remotes.sort(
-                    (a, b) =>
-                        (a.default ? -1 : 1) - (b.default ? -1 : 1) ||
-                        a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' })
-                );
+                GitRemote.sort(remotes);
             }
 
             return remotes;
@@ -2213,9 +2221,7 @@ export class GitService implements Disposable {
         const repositories = [...(await this.getRepositories())];
         if (repositories.length === 0) return repositories;
 
-        return repositories
-            .filter(r => !r.closed)
-            .sort((a, b) => (a.starred ? -1 : 1) - (b.starred ? -1 : 1) || a.index - b.index);
+        return Repository.sort(repositories.filter(r => !r.closed));
     }
 
     private async getRepositoryTree(): Promise<TernarySearchTree<Repository>> {
@@ -2384,7 +2390,7 @@ export class GitService implements Disposable {
             }
 
             if (options.sort) {
-                tags!.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' }));
+                GitTag.sort(tags!);
             }
 
             if (options.filter !== undefined) {

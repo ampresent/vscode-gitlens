@@ -6,13 +6,9 @@ import { Container } from '../container';
 import { GitLog, GitUri, RemoteResourceType } from '../git/gitService';
 import { KeyNoopCommand } from '../keyboard';
 import { Iterables, Strings } from '../system';
-import {
-    CommandQuickPickItem,
-    CommitQuickPickItem,
-    getQuickPickIgnoreFocusOut,
-    showQuickPickProgress
-} from './commonQuickPicks';
+import { CommandQuickPickItem, getQuickPickIgnoreFocusOut, showQuickPickProgress } from './commonQuickPicks';
 import { OpenRemotesCommandQuickPickItem } from './remotesQuickPick';
+import { CommitQuickPickItem } from './gitQuickPicks';
 
 export class BranchHistoryQuickPick {
     static showProgress(branch: string) {
@@ -34,7 +30,7 @@ export class BranchHistoryQuickPick {
         goBackCommand?: CommandQuickPickItem,
         nextPageCommand?: CommandQuickPickItem
     ): Promise<CommitQuickPickItem | CommandQuickPickItem | undefined> {
-        const items = Array.from(Iterables.map(log.commits.values(), c => new CommitQuickPickItem(c))) as (
+        const items = Array.from(Iterables.map(log.commits.values(), c => CommitQuickPickItem.create(c))) as (
             | CommitQuickPickItem
             | CommandQuickPickItem)[];
 

@@ -9,12 +9,12 @@ import { KeyNoopCommand } from '../keyboard';
 import { Iterables, Strings } from '../system';
 import {
     CommandQuickPickItem,
-    CommitQuickPickItem,
     getQuickPickIgnoreFocusOut,
     ShowFileHistoryFromQuickPickItem,
     showQuickPickProgress
 } from './commonQuickPicks';
 import { OpenRemotesCommandQuickPickItem } from './remotesQuickPick';
+import { CommitQuickPickItem } from './gitQuickPicks';
 
 export class FileHistoryQuickPick {
     static showProgress(placeHolder: string) {
@@ -42,7 +42,7 @@ export class FileHistoryQuickPick {
     ): Promise<CommitQuickPickItem | CommandQuickPickItem | undefined> {
         options = { pickerOnly: false, ...options };
 
-        const items = Array.from(Iterables.map(log.commits.values(), c => new CommitQuickPickItem(c))) as (
+        const items = Array.from(Iterables.map(log.commits.values(), c => CommitQuickPickItem.create(c))) as (
             | CommitQuickPickItem
             | CommandQuickPickItem)[];
 

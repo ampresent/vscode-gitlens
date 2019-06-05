@@ -61,6 +61,10 @@ export interface RepositoryFileSystemChangeEvent {
 }
 
 export class Repository implements Disposable {
+    static sort(repositories: Repository[]) {
+        return repositories.sort((a, b) => (a.starred ? -1 : 1) - (b.starred ? -1 : 1) || a.index - b.index);
+    }
+
     private _onDidChange = new EventEmitter<RepositoryChangeEvent>();
     get onDidChange(): Event<RepositoryChangeEvent> {
         return this._onDidChange.event;
@@ -229,6 +233,34 @@ export class Repository implements Disposable {
         }
     }
 
+    @gate()
+    @log()
+    async checkout(ref: string, options: { progress?: boolean } = {}) {
+        const { progress } = { progress: true, ...options };
+        if (!progress) return this.checkoutCore(ref);
+
+        return void (await window.withProgress(
+            {
+                location: ProgressLocation.Notification,
+                title: `Checking out ${this.formattedName} to ${ref}...`,
+                cancellable: false
+            },
+            () => this.checkoutCore(ref)
+        ));
+    }
+
+    private async checkoutCore(ref: string, options: { remote?: string } = {}) {
+        try {
+            void (await Container.git.checkout(this.path, ref));
+
+            this.fireChange(RepositoryChange.Repository);
+        }
+        catch (ex) {
+            Logger.error(ex);
+            Messages.showGenericErrorMessage('Unable to checkout repository');
+        }
+    }
+
     containsUri(uri: Uri) {
         if (GitUri.is(uri)) {
             uri = uri.repoPath !== undefined ? GitUri.file(uri.repoPath) : uri.documentUri();
@@ -273,6 +305,17 @@ export class Repository implements Disposable {
 
     getBranches(options: { filter?: (b: GitBranch) => boolean; sort?: boolean } = {}): Promise<GitBranch[]> {
         return Container.git.getBranches(this.path, options);
+    }
+
+    getBranchesAndOrTags(
+        options: {
+            filterBranches?: (b: GitBranch) => boolean;
+            filterTags?: (t: GitTag) => boolean;
+            include?: 'all' | 'branches' | 'tags';
+            sort?: boolean;
+        } = {}
+    ) {
+        return Container.git.getBranchesAndOrTags(this.path, options);
     }
 
     getChangedFilesCount(sha?: string): Promise<GitDiffShortStat | undefined> {

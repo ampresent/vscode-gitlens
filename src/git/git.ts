@@ -624,20 +624,24 @@ export class Git {
         {
             authors,
             maxCount,
+            merges,
             reverse,
             similarityThreshold
-        }: { authors?: string[]; maxCount?: number; reverse?: boolean; similarityThreshold?: number }
+        }: { authors?: string[]; maxCount?: number; merges?: boolean; reverse?: boolean; similarityThreshold?: number }
     ) {
         const params = [
             'log',
             '--name-status',
             `--format=${GitLogParser.defaultFormat}`,
             '--full-history',
-            `-M${similarityThreshold == null ? '' : `${similarityThreshold}%`}`,
-            '-m'
+            `-M${similarityThreshold == null ? '' : `${similarityThreshold}%`}`
         ];
         if (maxCount && !reverse) {
             params.push(`-n${maxCount}`);
+        }
+
+        if (merges) {
+            params.push('-m');
         }
 
         if (authors) {

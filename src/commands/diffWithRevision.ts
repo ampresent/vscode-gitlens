@@ -138,7 +138,7 @@ export class DiffWithRevisionCommand extends ActiveEditorCommand {
 
             if (pick instanceof CommandQuickPickItem) return pick.execute();
 
-            const ref = pick.commit.sha;
+            const ref = pick.item.sha;
 
             const diffArgs: DiffWithCommandArgs = {
                 repoPath: gitUri.repoPath,

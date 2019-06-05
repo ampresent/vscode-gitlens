@@ -112,12 +112,12 @@ export class ShowQuickBranchHistoryCommand extends ActiveEditorCachedCommand {
             );
 
             const commandArgs: ShowQuickCommitDetailsCommandArgs = {
-                sha: pick.commit.sha,
-                commit: pick.commit,
+                sha: pick.item.sha,
+                commit: pick.item,
                 repoLog: args.log,
                 goBackCommand: currentCommand
             };
-            return commands.executeCommand(Commands.ShowQuickCommitDetails, pick.commit.toGitUri(), commandArgs);
+            return commands.executeCommand(Commands.ShowQuickCommitDetails, pick.item.toGitUri(), commandArgs);
         }
         catch (ex) {
             Logger.error(ex, 'ShowQuickBranchHistoryCommand');

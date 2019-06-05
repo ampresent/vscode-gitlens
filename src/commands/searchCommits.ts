@@ -215,7 +215,7 @@ export class SearchCommitsCommand extends ActiveEditorCachedCommand {
 
                 if (pick instanceof CommandQuickPickItem) return pick.execute();
 
-                commit = pick.commit;
+                commit = pick.item;
                 goBackCommand = undefined;
             }
             else {

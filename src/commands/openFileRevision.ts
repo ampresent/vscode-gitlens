@@ -173,7 +173,7 @@ export class OpenFileRevisionCommand extends ActiveEditorCommand {
 
                 if (pick instanceof CommandQuickPickItem) return pick.execute();
 
-                args.uri = GitUri.toRevisionUri(pick.commit.sha, pick.commit.uri.fsPath, pick.commit.repoPath);
+                args.uri = GitUri.toRevisionUri(pick.item.sha, pick.item.uri.fsPath, pick.item.repoPath);
             }
 
             if (args.line !== undefined && args.line !== 0) {

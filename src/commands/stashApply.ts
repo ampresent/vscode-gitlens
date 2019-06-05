@@ -88,7 +88,7 @@ export class StashApplyCommand extends Command {
                 }
 
                 args.goBackCommand = currentCommand;
-                args.stashItem = pick.commit;
+                args.stashItem = pick.item;
             }
             finally {
                 progressCancellation.cancel();

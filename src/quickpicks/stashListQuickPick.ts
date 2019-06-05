@@ -6,12 +6,8 @@ import { Container } from '../container';
 import { GitStash, GitStashCommit } from '../git/gitService';
 import { KeyNoopCommand } from '../keyboard';
 import { Iterables, Strings } from '../system';
-import {
-    CommandQuickPickItem,
-    CommitQuickPickItem,
-    getQuickPickIgnoreFocusOut,
-    showQuickPickProgress
-} from './commonQuickPicks';
+import { CommandQuickPickItem, getQuickPickIgnoreFocusOut, showQuickPickProgress } from './commonQuickPicks';
+import { CommitQuickPickItem } from './gitQuickPicks';
 
 export class StashListQuickPick {
     static showProgress(mode: 'list' | 'apply') {
@@ -34,7 +30,7 @@ export class StashListQuickPick {
         currentCommand?: CommandQuickPickItem
     ): Promise<CommitQuickPickItem<GitStashCommit> | CommandQuickPickItem | undefined> {
         const items = ((stash &&
-            Array.from(Iterables.map(stash.commits.values(), c => new CommitQuickPickItem<GitStashCommit>(c)))) ||
+            Array.from(Iterables.map(stash.commits.values(), c => CommitQuickPickItem.create<GitStashCommit>(c)))) ||
             []) as (CommitQuickPickItem<GitStashCommit> | CommandQuickPickItem)[];
 
         if (mode === 'list') {

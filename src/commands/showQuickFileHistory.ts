@@ -174,13 +174,13 @@ export class ShowQuickFileHistoryCommand extends ActiveEditorCachedCommand {
             if (pick instanceof CommandQuickPickItem) return pick.execute();
 
             const commandArgs: ShowQuickCommitFileDetailsCommandArgs = {
-                commit: pick.commit,
+                commit: pick.item,
                 fileLog: args.log,
-                sha: pick.commit.sha,
+                sha: pick.item.sha,
                 goBackCommand: currentCommand
             };
 
-            return commands.executeCommand(Commands.ShowQuickCommitFileDetails, pick.commit.toGitUri(), commandArgs);
+            return commands.executeCommand(Commands.ShowQuickCommitFileDetails, pick.item.toGitUri(), commandArgs);
         }
         catch (ex) {
             Logger.error(ex, 'ShowQuickFileHistoryCommand');

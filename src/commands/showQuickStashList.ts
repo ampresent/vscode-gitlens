@@ -62,11 +62,11 @@ export class ShowQuickStashListCommand extends ActiveEditorCachedCommand {
             if (pick instanceof CommandQuickPickItem) return pick.execute();
 
             const commandArgs: ShowQuickCommitDetailsCommandArgs = {
-                commit: pick.commit,
-                sha: pick.commit.sha,
+                commit: pick.item,
+                sha: pick.item.sha,
                 goBackCommand: currentCommand
             };
-            return commands.executeCommand(Commands.ShowQuickCommitDetails, pick.commit.toGitUri(), commandArgs);
+            return commands.executeCommand(Commands.ShowQuickCommitDetails, pick.item.toGitUri(), commandArgs);
         }
         catch (ex) {
             Logger.error(ex, 'ShowQuickStashListCommand');
